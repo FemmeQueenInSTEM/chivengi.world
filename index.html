@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CHIVENGI</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        width: 100vw;
+        height: 100vh;
+      }
+      .container {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        background-color: #0159d4;
+        overflow: hidden;
+      }
+      video {
+        width: auto;
+        height: auto;
+        position: absolute;
+        min-width: 100%;
+        min-height: 100%;
+        z-index: 0;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+      }
+      #overlay {
+        position: absolute;
+        display: grid;
+        grid-template-columns: auto auto;
+        justify-content: space-between;
+        align-items: center;
+        width: 100vw;
+        height: 100vh;
+        box-sizing: border-box;
+        padding: 30px 20px;
+        background-color: white;
+        transition: all 0.4s ease;
+      }
+      h1,
+      p,
+      input,
+      button {
+        font-family: "Helvetica", "Arial", sans-serif;
+        margin: 0;
+        padding: 0;
+        color: blue;
+        font-weight: 600;
+      }
+      h1 {
+        font-size: 38px;
+      }
+      input[type="password"] {
+        font-size: 28px;
+        background-color: transparent;
+        border: none;
+        outline: none;
+        padding-bottom: 16px;
+        border-bottom: 1px solid blue;
+        color: blue;
+      }
+      .form {
+        display: grid;
+        grid-template-columns: auto auto;
+        transition: all 0.4s ease;
+        gap: 30px;
+      }
+      button {
+        border: none;
+        background-color: transparent;
+        font-size: 28px;
+        cursor: pointer;
+        transition: all 0.4s ease;
+      }
+      button:hover {
+        transform: scale(1.1);
+      }
+      ::placeholder {
+        color: blue;
+        opacity: 0.6;
+      }
+      #soundControl {
+        display: none;
+      }
+      #soundControl > button {
+        opacity: 0.5;
+      }
+      @media only screen and (max-width: 780px) {
+        #overlay {
+          grid-template-columns: auto;
+          align-items: start;
+          justify-content: center;
+          text-align: center;
+        }
+        #soundControl {
+          align-self: end;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <video id="video" autoplay loop muted playsinline>
+        <source type="video/mp4" src="./MITSUBISHI_CHIVENGI.m4v" />
+      </video>
+      <div id="overlay">
+        <h1>CHIVENGI</h1>
+        <div class="form">
+          <input id="passwordInput" type="password" placeholder="Password" />
+          <button id="goButton" type="button">Go →</button>
+        </div>
+        <div id="soundControl">
+          <button type="button">Sound on</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document
+        .getElementById("goButton")
+        .addEventListener("pointerdown", () => {
+          const passwordInput = document.getElementById("passwordInput");
+          if (passwordInput.value === "12345") {
+            document.getElementById("video").muted = false;
+            document.querySelector(".form").style.opacity = 0;
+            document.querySelector("#overlay").style.opacity = 0;
+            enableOverlayFeature();
+          } else {
+            passwordInput.style.borderBottom = "2px solid red";
+          }
+        });
+
+      let timeout;
+      let isEnabled = false;
+
+      const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+      const enableOverlayFeature = async () => {
+        await sleep(3000);
+        if (!isEnabled) {
+          document.addEventListener("mousemove", showOverlay);
+          document.addEventListener("pointerdown", showOverlay);
+          document.querySelector(".form").style.display = "none";
+          document.querySelector("#soundControl").style.display = "block";
+          isEnabled = true;
+        }
+      };
+
+      const disableOverlayFeature = () => {
+        if (isEnabled) {
+          document.removeEventListener("mousemove", showOverlay);
+          document.removeEventListener("pointerdown", showOverlay);
+          clearTimeout(timeout);
+          document.getElementById("overlay").style.opacity = 0;
+          isEnabled = false;
+        }
+      };
+
+      const showOverlay = () => {
+        clearTimeout(timeout);
+        const overlay = document.getElementById("overlay");
+        overlay.style.transition = "opacity 0.5s";
+        overlay.style.opacity = 1;
+        timeout = setTimeout(() => (overlay.style.opacity = 0), 3000);
+      };
+
+      // Sound control
+      let disabled = false;
+      document
+        .querySelector("#soundControl > button")
+        .addEventListener("pointerdown", () => {
+          disabled = !disabled;
+          const opacity = disabled ? 1 : 0.5;
+          const button = document.querySelector("#soundControl > button");
+          button.style.opacity = opacity;
+          button.innerText = disabled ? "Sound off" : "Sound on";
+          document.getElementById("video").muted = disabled ? true : false;
+        });
+    </script>
+  </body>
+</html>
